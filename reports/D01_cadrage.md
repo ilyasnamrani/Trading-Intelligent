@@ -12,8 +12,8 @@
 ## 1. Identification du binôme et cadrage général
 
 * **Binôme :**
-  * **Étudiant 1 :** [Nom Prénom] — [Email universitaire / CNE]
-  * **Étudiant 2 :** [Nom Prénom] — [Email universitaire / CNE]
+  * **Étudiant 1 :** Namrani Ilyas
+  * **Étudiant 2 :** Atattou Youssef
 * **Rôle de l'équipe :** Équipe de recherche et d'ingénierie quantitative.
 * **Mission :** Concevoir une application Web interactive sous **Streamlit**, modulaire, reproductible et scientifiquement défendable, couvrant l'ensemble de la chaîne de valeur du trading quantitatif : de l'ingestion des données de marché à la simulation de trading (backtest et paper trading).
 
