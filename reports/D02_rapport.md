@@ -1,7 +1,7 @@
 # D02 — Données, Ingestion et Audit Qualité
 ## Projet : Trading Intelligent | Variante B01 · QQQ (Nasdaq-100)
 
-> **Auteurs :** [Nom Prénom Étudiant 1] & [Nom Prénom Étudiant 2]  
+> **Auteurs :** Amrani Ilyas & Atattou Youssef  
 > **Responsable pédagogique :** Pr. Tawfik Masrour  
 > **Date :** Novembre 2026
 
