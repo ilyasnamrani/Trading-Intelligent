@@ -45,7 +45,7 @@
 
 ---
 
-## 4. Cadre opérationnel et règles méthodologiques
+## 4. Cadre opérationnel et règles méthodologiques .
 
 * **Capital initial simulé :** 100 000 USD virtuels (aucun argent réel).
 * **Univers d'investissement :** Long / Cash uniquement (fraction investie comprise entre 0% et 100%).
