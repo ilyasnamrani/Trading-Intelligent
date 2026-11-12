@@ -3,16 +3,18 @@
 > **Projet :** Trading Intelligent — De la donnée de marché à une application de trading quantitatif  
 > **Responsable pédagogique :** Pr. Tawfik Masrour | Département d'informatique — FS Rabat  
 > **Actif étudié :** **QQQ** (Invesco QQQ Trust / Nasdaq-100) | **Benchmark :** **SPY** (S&P 500)  
-> **Binôme :** Namrani Ilyas & Attatou Youssef
+> **Binôme :** [Nom Prénom Étudiant 1] & [Nom Prénom Étudiant 2]  
 
 ---
 
-### 📌 Navigation des Livrables
+### 📌 Documents de Référence & Navigation des Livrables
+
+* 📄 **Document Fondateur :** [Consulter le Cahier des Charges Intégral du Projet](reports/cahier_des_charges.md)
 
 | Livrable | Statut | Accès au document complet |
 | :--- | :---: | :--- |
 | **D01 — Cadrage & Architecture** | ✅ Validé | [Consulter le rapport D01](reports/D01_cadrage.md) |
-| **D02 — Données, Ingestion & Audit** | **Actuel (ci-dessous)** | *Affiché sur cette page* |
+| **D02 — Données, Ingestion & Audit** | 🚀 **Actuel (ci-dessous)** | *Affiché sur cette page* |
 | **D03 — Économétrie de la moyenne** | ⏳ À venir | `reports/D03_econometrie.md` |
 | **D04 — Module de Risque (GARCH)** | ⏳ À venir | `reports/D04_risque.md` |
 | **D05 — Machine Learning & Deep Learning** | ⏳ À venir | `reports/D05_ml_dl.md` |
