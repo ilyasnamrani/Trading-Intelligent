@@ -28,121 +28,313 @@
 
 # Livrable Actuel : D02 — Données, Ingestion et Audit Qualité
 
-## 1. Objectif du Livrable D02
+## 1. Objectif du livrable D02
 
-Le livrable D02 constitue le socle fondamental de toute la chaîne quantitative du projet.
+Le livrable D02 constitue la **fondation de toute la chaîne quantitative** du projet.
 Son objectif est triple :
 
-1. **Collecter et Sécuriser :** Télécharger l'historique complet de **QQQ** et **SPY** (2018–2026) et créer un snapshot local garantissant l'exécution 100% hors-ligne (mode démo imposé).
-2. **Auditer rigoureusement :** Vérifier l'intégrité mathématique et temporelle des séries (zéro NaN, zéro doublon, cohérence stricte des barres OHLC, volume positif).
-3. **Préparer les variables (*Feature Engineering*) :** Transformer les cours bruts en rendements logarithmiques, variables retardées et métriques de volatilité sans jamais introduire de biais d'anticipation (*no lookahead bias*).
+| Objectif | Description |
+| :--- | :--- |
+| **Collecter** | Télécharger les données historiques brutes de QQQ et SPY depuis Yahoo Finance et les sauvegarder localement. |
+| **Auditer** | Contrôler rigoureusement la qualité et la cohérence des données avant tout traitement. |
+| **Préparer** | Transformer les prix bruts en variables mathématiques exploitables par les modèles statistiques et de Machine Learning. |
 
 ---
 
-## 2. Relation directe avec l'objectif du projet
+## 2. Relation avec l'objectif global du projet
 
-La problématique scientifique de la variante **B01** est :
-> *« Les modèles anticipant le risque améliorent-ils les décisions sur un ETF technologique volatil (QQQ) ? »*
+Le projet vise à répondre à la question scientifique suivante :
 
-Pour mesurer si la gestion du risque protège le capital lors des crises, **tous les modèles futurs dépendent directement de ce livrable D02** :
-* **D03 (ARIMA / SARIMAX) :** Nécessite les rendements stationnaires `r_qqq` et la variable exogène retardée du marché `r_spy_lag1`.
-* **D04 (ARCH / GARCH) :** Modélise la variance conditionnelle directement sur les résidus des rendements `r_qqq`.
-* **D05 (Machine Learning & MLP) :** S'entraîne sur le vecteur de variables calculées (`r_qqq_lag1`, `r_qqq_lag5`, `vol_20`).
-* **D06 (Backtesting) :** Évalue la performance nette face au benchmark passif `SPY`.
+> *« Les modèles anticipant le risque améliorent-ils les décisions de trading sur un ETF technologique volatil (QQQ) ? »*
 
----
+Pour y répondre, **tous les modules ultérieurs** (D03 : Économétrie, D04 : GARCH, D05 : Machine Learning, D06 : Backtest) ont besoin d'une même source de données **propre, cohérente et non biaisée**.
 
-## 3. Données et règles de traçabilité
+Le D02 remplit exactement ce rôle. Sans lui, les modèles apprendraient sur des données corrompues ou mal transformées, ce qui rendrait toutes les conclusions scientifiques invalides.
 
-### 3.1 Actifs sélectionnés
-* **Actif cible :** `QQQ` (*Invesco QQQ Trust*) — panier des 100 leaders technologiques et de croissance américains (Apple, Microsoft, NVIDIA, Amazon, Alphabet, Meta...).
-* **Benchmark commun :** `SPY` (*SPDR S&P 500 ETF Trust*) — baromètre large du marché actions américain.
-
-### 3.2 Découpage temporel imposé
-* **Apprentissage (Train) :** 2018 – 2022
-* **Validation (Tuning des hyperparamètres) :** 2023 – 2024
-* **Test hors-échantillon (Test final gelé) :** 1er janvier 2025 – 30 octobre 2026
-* **Volume total :** **2 304 séances de bourse** réelles/ouvrables.
-
-### 3.3 Pourquoi utiliser les prix ajustés (`Adj Close`) ?
-Le prix de clôture brut (`Close`) est trompeur :
-* **Splits d'actions :** Une division par deux du nominal divise le prix par 2 sans aucune perte pour l'investisseur.
-* **Dividendes :** Le versement d'un dividende réduit mécaniquement le cours de l'action.
-Le prix ajusté (`Adj Close`) corrige ces événements pour que chaque variation reflète un gain ou une perte économique réel.
+```
+D02 (Ce livrable)
+     │
+     ├──► D03 : Modèles économétriques (ARIMA, SARIMAX)
+     ├──► D04 : Modèle de risque (GARCH, VaR, ES)
+     ├──► D05 : Machine Learning et Deep Learning
+     └──► D06 : Moteur de backtesting et Paper Trading
+```
 
 ---
 
-## 4. Résultats de l'Audit Qualité
+## 3. Données utilisées
 
-L'audit automatique exécuté par `src/data.py` valide les contrôles suivants :
+### 3.1 Actifs financiers
 
-| Contrôle Qualité | QQQ (Actif Cible) | SPY (Benchmark) | Statut de Conformité |
-| :--- | :---: | :---: | :---: |
-| **Plage temporelle** | 2018-01-02 → 2026-10-30 | 2018-01-02 → 2026-10-30 | ✅ Conforme (2 304 séances) |
-| **Valeurs manquantes (NaN)** | 0 | 0 | ✅ Aucune donnée manquante |
-| **Doublons d'horodatage** | 0 | 0 | ✅ Index temporel strictement unique |
-| **Cohérence OHLC (`Low <= Close <= High`)** | 0 anomalie | Conforme (données réelles) | ✅ Barres de prix valides |
-| **Volumes nuls** | 0 | 0 | ✅ Liquidité continue constatée |
-| **Rendements journaliers extrêmes (> 15%)** | 0 | 0 | ✅ Aucune aberration ponctuelle |
-| **Statut d'acceptation global** | **PROPRE & VALIDÉ** | **PROPRE & VALIDÉ** | ✅ **Prêt pour modélisation** |
+| Ticker | Nom complet | Rôle dans le projet |
+| :--- | :--- | :--- |
+| **QQQ** | Invesco QQQ Trust (Nasdaq-100) | Actif principal étudié |
+| **SPY** | SPDR S&P 500 ETF Trust | Benchmark de comparaison + variable exogène (SARIMAX) |
+
+### 3.2 Période d'étude
+
+| Fenêtre | Période | Usage |
+| :--- | :--- | :--- |
+| Apprentissage | 2018 – 2022 | Entraînement des modèles |
+| Validation | 2023 – 2024 | Réglage des hyperparamètres |
+| Test final (gelé) | Jan 2025 – Oct 2026 | Évaluation hors-échantillon |
+
+**Total : 2 304 séances boursières** (jours ouvrables uniquement).
+
+### 3.3 Format OHLCV
+
+Les données brutes sont au format standard OHLCV :
+
+| Colonne | Signification | Remarque |
+| :--- | :--- | :--- |
+| `Open` | Prix d'ouverture | Premier prix de la séance |
+| `High` | Plus haut de la journée | — |
+| `Low` | Plus bas de la journée | — |
+| `Close` | Prix de clôture **ajusté** | ⚠️ Voir note ci-dessous |
+| `Volume` | Nombre d'actions échangées | Indicateur de liquidité |
+
+> **Pourquoi le prix ajusté (Adj Close) et non le prix brut ?**
+> Le prix de clôture brut est **biaisé** dans le temps par deux phénomènes :
+> - **Les splits d'actions :** Si une action à 300 USD est divisée en 2 (split 2:1), le prix tombe à 150 USD. Ce n'est **pas une perte réelle**, mais le graphique brut montre une chute fictive de 50%.
+> - **Les dividendes :** Quand une entreprise verse un dividende, le cours baisse mécaniquement du montant versé. Encore une distorsion artificielle.
+>
+> Le prix ajusté neutralise ces deux distorsions et garantit que les rendements calculés reflètent la **vraie performance économique** de l'investissement.
 
 ---
 
-## 5. Ingénierie des Variables (*Feature Engineering*)
+## 4. Étape 1 — Collecte et Snapshot Local
 
-Afin d'éviter tout biais d'anticipation (*lookahead bias*), toute information connue à l'instant `t` est strictement calculée sur les séances antérieures ou égales à `t`.
+### Pourquoi ?
+La reproductibilité est un critère fondamental de la démarche scientifique. Si les données changent entre deux exécutions (mises à jour de Yahoo Finance), les résultats ne sont plus comparables. De plus, le cahier des charges impose un **mode démonstration hors-ligne** pour la soutenance.
+
+### Comment ?
+- La bibliothèque Python `yfinance` interroge l'API Yahoo Finance.
+- Dès le premier téléchargement, les données sont sauvegardées en CSV dans `data/raw/`.
+- Lors des exécutions suivantes, le script **charge le snapshot local** sans toucher au réseau.
+
+```python
+# Logique de priorité : local d'abord, réseau si absent
+if os.path.exists(snapshot_path) and not force_download:
+    df = pd.read_csv(snapshot_path, ...)   # Mode hors-ligne
+else:
+    df = yf.download(ticker, ...)          # Téléchargement réseau
+    df.to_csv(snapshot_path)               # Sauvegarde locale
+```
+
+### Fichiers produits
+- `data/raw/QQQ_raw.csv`
+- `data/raw/SPY_raw.csv`
+
+---
+
+## 5. Étape 2 — Audit Qualité
+
+### Pourquoi ?
+> *« Garbage in, garbage out. »*
+>
+> Un modèle statistique ou de Machine Learning **apprend des patterns dans les données**. S'il y a des erreurs dans les données (valeurs manquantes, doublons, incohérences), le modèle apprend de faux patterns et produit des décisions de trading incorrectes. L'audit est donc **non négociable**.
+
+### Comment ? Les 5 vérifications effectuées
+
+| Vérification | Ce qu'on cherche | Conséquence si ignoré |
+| :--- | :--- | :--- |
+| **1. Valeurs manquantes (NaN)** | Jours sans données | Erreurs de calcul dans ARIMA, GARCH |
+| **2. Doublons d'index** | Même date deux fois | Données comptées deux fois → biais |
+| **3. Cohérence OHLC** | Low ≤ Open, Close ≤ High | Signaux techniques erronés |
+| **4. Volumes nuls** | Séances sans transaction | Jours fériés non filtrés |
+| **5. Rendements extrêmes** | Mouvements > ±15% | Anomalies ou erreurs de données |
+
+### Résultats de l'audit
+
+#### QQQ
+| Indicateur | Valeur | Statut |
+| :--- | :--- | :--- |
+| Période | 2018-01-02 → 2026-10-30 | ✅ |
+| Nombre de séances | 2 304 | ✅ |
+| Valeurs NaN | 0 | ✅ |
+| Doublons | 0 | ✅ |
+| Incohérences OHLC | 0 | ✅ |
+| Volumes nuls | 0 | ✅ |
+| Rendements > ±15% | 0 | ✅ |
+| **Statut global** | **OK — PROPRES** | ✅ |
+
+#### SPY
+| Indicateur | Valeur | Statut |
+| :--- | :--- | :--- |
+| Période | 2018-01-02 → 2026-10-30 | ✅ |
+| Nombre de séances | 2 304 | ✅ |
+| Valeurs NaN | 0 | ✅ |
+| Doublons | 0 | ✅ |
+| Volumes nuls | 0 | ✅ |
+| **Statut global** | **OK** | ✅ |
+
+---
+
+## 6. Étape 3 — Nettoyage
+
+### Pourquoi ?
+Même avec des données globalement propres, des micro-anomalies peuvent subsister (1 ou 2 NaN isolés sur une colonne secondaire). La stratégie de nettoyage doit être **conservative** : on ne supprime pas une ligne entière à cause d'un seul NaN, on l'impute intelligemment.
+
+### Comment ?
+Trois opérations dans l'ordre :
+
+```
+1. Tri chronologique       → garantit l'ordre temporel strict
+2. Suppression des doublons → on garde la première occurrence
+3. Forward-fill (max 1 jour) → un NaN isolé prend la valeur du jour précédent
+                               (simule l'absence de transaction : prix inchangé)
+```
+
+> **Pourquoi forward-fill et pas suppression ?**  
+> Supprimer une ligne crée un "trou" dans la série temporelle. Les modèles ARIMA et GARCH supposent des données régulièrement espacées dans le temps. Un trou fausserait les calculs d'autocorrélation et de volatilité.
+
+---
+
+## 7. Étape 4 — Ingénierie des Variables (Feature Engineering)
+
+### Pourquoi cette étape est critique ?
+
+Les modèles ne travaillent **jamais sur les prix bruts**. Voici pourquoi :
+
+| Problème avec les prix bruts | Solution |
+| :--- | :--- |
+| Non stationnaires (ont une tendance) | Calculer les **rendements** (différences log) |
+| Échelles incomparables (QQQ ≠ SPY en valeur absolue) | Les rendements sont comparables |
+| Pas d'information sur la dynamique temporelle | Ajouter des variables **retardées** |
+| Pas d'information sur le risque | Ajouter la **volatilité réalisée** |
+
+### Principe fondamental : Zéro fuite d'information (*No Lookahead Bias*)
+
+> ⚠️ **Règle absolue :** Toute variable calculée pour la date `t` ne doit utiliser que des informations **connues et disponibles à la clôture de `t`**. Il est **strictement interdit** d'utiliser des données de `t+1` ou plus pour prédire `t+1`.
+
+Ce principe est garanti par l'utilisation systématique de `.shift()` pour les variables retardées.
+
+### Les 7 variables construites
+
+#### Variable cible (Y) — Ce qu'on veut prédire
 
 ```text
-# Variable cible à prédire (strictement décalée au jour suivant t+1) :
 target_t = ln( P_QQQ[t+1] / P_QQQ[t] )
 ```
 
-### Dictionnaire du Dataset produit (`data/processed/features.csv`) :
+C'est le rendement logarithmique de QQQ à **demain** (`t+1`). C'est la seule variable du futur dans le dataset, et elle est **exclusivement réservée à l'évaluation** des modèles. Elle ne sera jamais utilisée comme variable d'entrée.
 
-| Variable | Type | Formule de calcul | Rôle dans l'application |
-| :--- | :---: | :--- | :--- |
-| `close_qqq` | Niveau | Cours ajusté QQQ | Base de calcul des rendements et du capital |
-| `close_spy` | Niveau | Cours ajusté SPY | Référence de valorisation du benchmark |
-| `r_qqq` | Entrée | `ln( P_QQQ[t] / P_QQQ[t-1] )` | Rendement continu journalier de QQQ |
-| `r_spy` | Entrée | `ln( P_SPY[t] / P_SPY[t-1] )` | Rendement continu journalier du S&P 500 |
-| `r_qqq_lag1` | Entrée | `r_qqq[t-1]` | Signal d'inertie / momentum à 1 jour |
-| `r_qqq_lag5` | Entrée | `r_qqq[t-5]` | Effet d'autocorrélation hebdomadaire (5 séances) |
-| `r_spy_lag1` | Entrée | `r_spy[t-1]` | **Variable exogène retardée imposée pour SARIMAX** |
-| `vol_20` | Entrée | Écart-type glissant de `r_qqq` (20j) | Indicateur de régime de volatilité récente |
-| `target` | **Cible** | `r_qqq[t+1]` | **Variable à prédire (jamais injectée en entrée)** |
+#### Variables d'entrée (X) — Ce qu'on connaît à `t`
 
-**Dataset final exporté :** **2 283 séances exploitables × 9 colonnes** (après suppression des lignes d'initialisation de la fenêtre de 20 jours).
+| Variable | Formule de calcul | Interprétation |
+| :--- | :--- | :--- |
+| `r_qqq` | `ln( P_QQQ[t] / P_QQQ[t-1] )` | Rendement log de QQQ aujourd'hui |
+| `r_spy` | `ln( P_SPY[t] / P_SPY[t-1] )` | Rendement log de SPY aujourd'hui |
+| `r_qqq_lag1` | `r_qqq[t-1]` | Inertie court terme / momentum (hier) |
+| `r_qqq_lag5` | `r_qqq[t-5]` | Effet hebdomadaire (il y a 5 séances) |
+| `r_spy_lag1` | `r_spy[t-1]` | Variable exogène pour SARIMAX (B01) |
+| `vol_20` | `std(r_qqq)` sur 20 séances | Thermomètre du risque historique récent |
+
+> **Pourquoi le rendement logarithmique et pas le rendement simple ?**
+> - Le rendement simple `(P[t] - P[t-1]) / P[t-1]` est asymétrique : une perte de 50% nécessite un gain de 100% pour revenir au point de départ.
+> - Le rendement log `ln(P[t] / P[t-1])` est **additif dans le temps**, ce qui facilite les calculs cumulés et améliore les propriétés statistiques pour la modélisation.
+
+> **Pourquoi vol_20 sur 20 séances ?**
+> 20 séances = environ **1 mois de bourse** (4 semaines × 5 jours). C'est l'horizon standard en finance pour estimer la volatilité à court terme. Elle capte les changements de régime récents sans être trop sensible au bruit quotidien.
+
+### Dataset final produit
+
+```
+Fichier : data/processed/features.csv
+Dimensions : 2 283 séances × 9 variables
+
+Statistiques descriptives :
+                r_qqq      r_spy      vol_20      target
+  count :       2 283      2 283       2 283       2 283
+  mean  :      0.0003     0.0007      0.0172      0.0003
+  std   :      0.0179     0.0120      0.0053      0.0179
+  min   :     -0.1201    -0.0700      0.0077     -0.1201
+  max   :      0.1176     0.0740      0.0382      0.1176
+```
 
 ---
 
-## 6. Visualisations et Audit Graphique
+## 8. Étape 5 — Visualisations d'Audit
 
-Le graphique d'audit à 4 panneaux est généré automatiquement par le pipeline :
+Quatre graphiques ont été générés pour permettre une inspection visuelle des données :
 
-![D02 — Audit Graphique QQQ vs SPY](reports/figures/D02_audit_donnees.png)
+Les 4 graphiques sont générés automatiquement par `python src/data.py` et sauvegardés dans `reports/figures/`.
 
-### Analyse des 4 panneaux :
-1. **Prix normalisés (Base 100 en 2018) :** Compare la trajectoire de croissance de QQQ par rapport au benchmark SPY. Permet d'observer les phases de surperformance technologique et les corrections de marché.
-2. **Rendements journaliers de QQQ :** Met en évidence les alternances entre régimes de calme plat et régimes de chocs brutaux.
-3. **Volatilité réalisée 20 jours (annualisée) :** Illustre la propriété de *clustering de volatilité* (les périodes agitées succèdent aux périodes agitées), ce qui justifie mathématiquement le recours à un modèle **GARCH** au livrable D04.
-4. **Distribution des rendements vs Loi normale :** Révèle des queues épaisses (*fat tails*, leptokurticité). Les chocs extrêmes sont plus fréquents que dans une loi gaussienne, justifiant le calcul de la **Value-at-Risk (VaR)** et de l'**Expected Shortfall (ES)**.
+![D02 — Audit des données : QQQ vs SPY](reports/figures/D02_audit_donnees.png)
+
+### Graphique 1 — Prix normalisés (Base 100 = Jan 2018)
+**Pourquoi ?** Comparer QQQ et SPY sur la même échelle, indépendamment de leur prix de départ.
+
+**Lecture :** Si la courbe QQQ est au-dessus de SPY, le Nasdaq-100 a sur-performé le marché large. C'est le **benchmark de référence** que votre stratégie algorithmique devra battre à terme.
+
+### Graphique 2 — Rendements journaliers de QQQ
+**Pourquoi ?** Visualiser les épisodes de crise (barres rouges profondes) et d'euphorie (barres vertes hautes).
+
+**Lecture :** Les clusters de grandes barres révèlent les **régimes de volatilité** — exactement ce que le modèle GARCH (D04) tentera d'anticiper.
+
+### Graphique 3 — Volatilité réalisée 20 jours (annualisée)
+**Pourquoi ?** Montrer visuellement que la volatilité **n'est pas constante** dans le temps. C'est l'hypothèse fondamentale qui justifie l'utilisation du modèle GARCH.
+
+**Lecture :** Les pics correspondent aux grandes crises (COVID-19 en 2020, hausse des taux en 2022...). Un modèle naïf qui suppose une volatilité constante sous-estimera dramatiquement le risque pendant ces périodes.
+
+### Graphique 4 — Distribution des rendements vs Loi Normale
+**Pourquoi ?** Tester si les rendements de QQQ suivent une loi normale (hypothèse de nombreux modèles classiques).
+
+**Lecture :** Si la **kurtosis** (mesure de l'aplatissement) est élevée (> 3), les queues de distribution sont plus épaisses que la loi normale. Cela signifie que les **krachs extrêmes sont plus fréquents que ce que la théorie classique prédit** — d'où la nécessité de la VaR et de l'Expected Shortfall (D04).
 
 ---
 
-## 7. Reproductibilité et Mode Démonstration
+## 9. Architecture du Code
 
-L'ensemble de ce livrable est entièrement reproductible avec les commandes suivantes :
+```
+src/data.py                    ← Script principal du D02
+│
+├── download_data()            ← Téléchargement + snapshot local
+├── audit_quality()            ← 5 vérifications d'intégrité
+├── clean_data()               ← Nettoyage conservateur
+├── build_features()           ← Calcul des 7 variables
+├── plot_all()                 ← 4 graphiques d'audit
+└── run_pipeline()             ← Orchestration complète
+
+src/generate_snapshots.py      ← Génération de données simulées (mode démo)
+```
+
+---
+
+## 10. Reproductibilité
+
+Pour reproduire exactement ce livrable depuis zéro :
 
 ```bash
-# 1. Installation des dépendances requises
-pip install yfinance pandas numpy matplotlib seaborn
+# 1. Installer les dépendances
+pip install -r requirements.txt
 
-# 2. Exécution du pipeline complet (téléchargement, audit, features, graphiques)
+# 2. (Option A) Avec connexion Internet : données réelles Yahoo Finance
 python src/data.py
 
-# 3. En cas d'indisponibilité réseau (Mode démonstration hors-ligne)
+# 2. (Option B) Sans connexion Internet : données simulées
 python src/generate_snapshots.py
 python src/data.py
 ```
 
-*Les données brutes auditées sont archivées localement dans `data/raw/` et le jeu de variables final dans `data/processed/features.csv`.*
+**Sortie garantie :**
+- `data/raw/QQQ_raw.csv` et `data/raw/SPY_raw.csv`
+- `data/processed/features.csv`
+- `reports/figures/D02_audit_donnees.png`
+
+---
+
+## 11. Conclusion et Transition vers D03
+
+Le livrable D02 a produit un dataset propre, enrichi et prêt pour la modélisation :
+
+- ✅ **2 304 séances** de données brutes collectées et auditées (QQQ + SPY).
+- ✅ **0 anomalie critique** détectée sur QQQ.
+- ✅ **9 variables** calculées, dont 7 variables d'entrée et 1 variable cible.
+- ✅ **Mode hors-ligne** opérationnel pour la démonstration.
+- ✅ **Principe No-Lookahead** strictement respecté.
+
+Le dataset `features.csv` sera chargé directement par les modules suivants :
+- **D03** utilisera `r_qqq`, `r_spy_lag1` pour les modèles ARIMA et SARIMAX.
+- **D04** utilisera `r_qqq` pour détecter les effets ARCH et calibrer GARCH.
+- **D05** utilisera toutes les variables d'entrée pour entraîner les modèles ML.
