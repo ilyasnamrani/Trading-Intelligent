@@ -74,7 +74,7 @@ Les données brutes sont au format standard OHLCV :
 
 > **Pourquoi le prix ajusté (Adj Close) et non le prix brut ?**
 > Le prix de clôture brut est **biaisé** dans le temps par deux phénomènes :
-> - **Les splits d'actions :** Si une action à 300$ est divisée en 2 (split 2:1), le prix tombe à 150$. Ce n'est **pas une perte réelle**, mais le graphique brut montre une chute fictive de 50%.
+> - **Les splits d'actions :** Si une action à 300 USD est divisée en 2 (split 2:1), le prix tombe à 150 USD. Ce n'est **pas une perte réelle**, mais le graphique brut montre une chute fictive de 50%.
 > - **Les dividendes :** Quand une entreprise verse un dividende, le cours baisse mécaniquement du montant versé. Encore une distorsion artificielle.
 >
 > Le prix ajusté neutralise ces deux distorsions et garantit que les rendements calculés reflètent la **vraie performance économique** de l'investissement.
@@ -184,31 +184,34 @@ Les modèles ne travaillent **jamais sur les prix bruts**. Voici pourquoi :
 
 ### Principe fondamental : Zéro fuite d'information (*No Lookahead Bias*)
 
-> ⚠️ **Règle absolue :** Toute variable calculée pour la date $t$ ne doit utiliser que des informations **connues et disponibles à la clôture de $t$**. Il est **strictement interdit** d'utiliser des données de $t+1$ ou plus pour prédire $t+1$.
+> ⚠️ **Règle absolue :** Toute variable calculée pour la date `t` ne doit utiliser que des informations **connues et disponibles à la clôture de `t`**. Il est **strictement interdit** d'utiliser des données de `t+1` ou plus pour prédire `t+1`.
 
 Ce principe est garanti par l'utilisation systématique de `.shift()` pour les variables retardées.
 
 ### Les 7 variables construites
 
-#### Variable cible ($Y$) — Ce qu'on veut prédire
-$$\text{target}_t = \ln\left(\frac{P^{QQQ}_{t+1}}{P^{QQQ}_t}\right)$$
+#### Variable cible (Y) — Ce qu'on veut prédire
 
-C'est le rendement logarithmique de QQQ à **demain**. C'est la seule variable du futur dans le dataset, et elle est **exclusivement réservée à l'évaluation** des modèles. Elle ne sera jamais utilisée comme variable d'entrée.
+```text
+target_t = ln( P_QQQ[t+1] / P_QQQ[t] )
+```
 
-#### Variables d'entrée ($X$) — Ce qu'on connaît à $t$
+C'est le rendement logarithmique de QQQ à **demain** (`t+1`). C'est la seule variable du futur dans le dataset, et elle est **exclusivement réservée à l'évaluation** des modèles. Elle ne sera jamais utilisée comme variable d'entrée.
 
-| Variable | Formule | Interprétation |
+#### Variables d'entrée (X) — Ce qu'on connaît à `t`
+
+| Variable | Formule de calcul | Interprétation |
 | :--- | :--- | :--- |
-| `r_qqq` | $\ln(P^{QQQ}_t / P^{QQQ}_{t-1})$ | Rendement log de QQQ aujourd'hui |
-| `r_spy` | $\ln(P^{SPY}_t / P^{SPY}_{t-1})$ | Rendement log de SPY aujourd'hui |
-| `r_qqq_lag1` | `r_qqq` décalé de 1 jour | Inertie court terme / momentum |
-| `r_qqq_lag5` | `r_qqq` décalé de 5 jours | Effet hebdomadaire |
-| `r_spy_lag1` | `r_spy` décalé de 1 jour | Variable exogène pour SARIMAX (B01) |
-| `vol_20` | $\sigma(\text{r\_qqq})$ sur 20 séances glissantes | Thermomètre du risque historique |
+| `r_qqq` | `ln( P_QQQ[t] / P_QQQ[t-1] )` | Rendement log de QQQ aujourd'hui |
+| `r_spy` | `ln( P_SPY[t] / P_SPY[t-1] )` | Rendement log de SPY aujourd'hui |
+| `r_qqq_lag1` | `r_qqq[t-1]` | Inertie court terme / momentum (hier) |
+| `r_qqq_lag5` | `r_qqq[t-5]` | Effet hebdomadaire (il y a 5 séances) |
+| `r_spy_lag1` | `r_spy[t-1]` | Variable exogène pour SARIMAX (B01) |
+| `vol_20` | `std(r_qqq)` sur 20 séances | Thermomètre du risque historique récent |
 
 > **Pourquoi le rendement logarithmique et pas le rendement simple ?**
-> - Le rendement simple $\frac{P_t - P_{t-1}}{P_{t-1}}$ est asymétrique : une perte de 50% nécessite un gain de 100% pour revenir au point de départ.
-> - Le rendement log $\ln(P_t/P_{t-1})$ est **additif dans le temps**, ce qui facilite les calculs cumulés et améliore les propriétés statistiques pour la modélisation.
+> - Le rendement simple `(P[t] - P[t-1]) / P[t-1]` est asymétrique : une perte de 50% nécessite un gain de 100% pour revenir au point de départ.
+> - Le rendement log `ln(P[t] / P[t-1])` est **additif dans le temps**, ce qui facilite les calculs cumulés et améliore les propriétés statistiques pour la modélisation.
 
 > **Pourquoi vol_20 sur 20 séances ?**
 > 20 séances = environ **1 mois de bourse** (4 semaines × 5 jours). C'est l'horizon standard en finance pour estimer la volatilité à court terme. Elle capte les changements de régime récents sans être trop sensible au bruit quotidien.
