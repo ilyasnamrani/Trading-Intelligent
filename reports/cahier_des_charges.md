@@ -8,7 +8,11 @@
 > **Auteur et Responsable Pédagogique :** Pr. Tawfik Masrour  
 > **Département d'Informatique — Faculté des Sciences — Université Mohammed V, Rabat**  
 > **Cadre académique :** Année Universitaire 2026 / 2027  
+<<<<<<< HEAD
 > **Équipe projet (Binôme B01) :** Amrani Ilyas & Atattou Youssef  
+=======
+> **Équipe projet (Binôme B01) :** Namrani Ilyas & Atattou Youssef  
+>>>>>>> d6500a85a184fc71994df9fecb7589dadb82934b
 
 ---
 
@@ -240,5 +244,9 @@ Le présent cahier des charges constitue le document de référence contractuel 
 * **Fait à :** Rabat  
 * **Date :** Novembre 2026  
 * **Signatures du binôme :**  
+<<<<<<< HEAD
   * Amrani Ilyas  
+=======
+  * Namrani Ilyas  
+>>>>>>> d6500a85a184fc71994df9fecb7589dadb82934b
   * Atattou Youssef  

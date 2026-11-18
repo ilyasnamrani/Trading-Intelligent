@@ -3,7 +3,11 @@
 > **Projet :** Trading Intelligent — De la donnée de marché à une application de trading quantitatif  
 > **Responsable pédagogique :** Pr. Tawfik Masrour | Département d'informatique — FS Rabat  
 > **Actif étudié :** **QQQ** (Invesco QQQ Trust / Nasdaq-100) | **Benchmark :** **SPY** (S&P 500)  
+<<<<<<< HEAD
 > **Binôme :** Amrani Ilyas & Atattou Youssef  
+=======
+> **Binôme :** Namrani Ilyas & Atattou Youssef  
+>>>>>>> d6500a85a184fc71994df9fecb7589dadb82934b
 
 ---
 
