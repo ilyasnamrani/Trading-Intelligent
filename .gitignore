@@ -27,10 +27,6 @@ htmlcov/
 *.env
 secrets.toml
 
-# Donnees brutes et derivees (regenerables par les scripts)
-data/raw/
-data/processed/
-
 # OS generated
 .DS_Store
 Thumbs.db
