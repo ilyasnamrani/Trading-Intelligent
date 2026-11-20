@@ -7,22 +7,22 @@
 
 ---
 
-### 📌 Documents de Référence & Navigation des Livrables
+###  Documents de Référence & Navigation des Livrables
 
 * 📄 **Document Fondateur :** [Consulter le Cahier des Charges Intégral du Projet](reports/cahier_des_charges.md)
 
 | Livrable | Statut | Accès au document complet |
 | :--- | :---: | :--- |
-| **D01 — Cadrage & Architecture** | ✅ Validé | [Consulter le rapport D01](reports/D01_cadrage.md) |
-| **D02 — Données, Ingestion & Audit** | ✅ Validé | [Consulter le rapport D02](reports/D02_rapport.md) |
-| **D03 — Économétrie de la moyenne** | 🚀 **Actuel (ci-dessous)** | *Affiché sur cette page* |
-| **D04 — Module de Risque (GARCH)** | ⏳ À venir | `reports/D04_risque.md` |
-| **D05 — Machine Learning & Deep Learning** | ⏳ À venir | `reports/D05_ml_dl.md` |
-| **D06 — Stratégie & Backtesting** | ⏳ À venir | `reports/D06_backtest.md` |
-| **D07 — Application Web (Streamlit)** | ⏳ À venir | Code `app.py` |
-| **D08 — Paper Trading (5 séances)** | ⏳ À venir | `reports/D08_paper_trading.md` |
-| **D09 — Reproductibilité & Tests** | ⏳ À venir | `tests/` & `pytest` |
-| **D10 — Rapport Final & Soutenance** | ⏳ À venir | `reports/final_report.pdf` |
+| **D01 — Cadrage & Architecture** | Validé | [Consulter le rapport D01](reports/D01_cadrage.md) |
+| **D02 — Données, Ingestion & Audit** | En attente | [Consulter le rapport D02](reports/D02_rapport.md) |
+| **D03 — Économétrie de la moyenne** | **Actuel (ci-dessous)** | *Affiché sur cette page* |
+| **D04 — Module de Risque (GARCH)** |  À venir | `reports/D04_risque.md` |
+| **D05 — Machine Learning & Deep Learning** |  À venir | `reports/D05_ml_dl.md` |
+| **D06 — Stratégie & Backtesting** |  À venir | `reports/D06_backtest.md` |
+| **D07 — Application Web (Streamlit)** |  À venir | Code `app.py` |
+| **D08 — Paper Trading (5 séances)** |  À venir | `reports/D08_paper_trading.md` |
+| **D09 — Reproductibilité & Tests** |  À venir | `tests/` & `pytest` |
+| **D10 — Rapport Final & Soutenance** |  À venir | `reports/final_report.pdf` |
 
 ---
 
