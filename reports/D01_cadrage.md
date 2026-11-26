@@ -12,7 +12,11 @@
 ## 1. Identification du binôme et cadrage général
 
 * **Binôme :**
+<<<<<<< HEAD
+  * **Étudiant 1 :** Amrani Ilyas
+=======
   * **Étudiant 1 :** Namrani Ilyas
+>>>>>>> d6500a85a184fc71994df9fecb7589dadb82934b
   * **Étudiant 2 :** Atattou Youssef
 * **Rôle de l'équipe :** Équipe de recherche et d'ingénierie quantitative.
 * **Mission :** Concevoir une application Web interactive sous **Streamlit**, modulaire, reproductible et scientifiquement défendable, couvrant l'ensemble de la chaîne de valeur du trading quantitatif : de l'ingestion des données de marché à la simulation de trading (backtest et paper trading).
@@ -45,7 +49,11 @@
 
 ---
 
+<<<<<<< HEAD
+## 4. Cadre opérationnel et règles méthodologiques
+=======
 ## 4. Cadre opérationnel et règles méthodologiques .
+>>>>>>> d6500a85a184fc71994df9fecb7589dadb82934b
 
 * **Capital initial simulé :** 100 000 USD virtuels (aucun argent réel).
 * **Univers d'investissement :** Long / Cash uniquement (fraction investie comprise entre 0% et 100%).
@@ -69,7 +77,11 @@
 
 | Domaine / Rôle | Responsable | Livrables associés | Tâches principales |
 | :--- | :--- | :--- | :--- |
+<<<<<<< HEAD
+| **Pôle Données, Économétrie & Risque** | **Amrani Ilyas** | **D02**, **D03**, **D04** | • Collecte, nettoyage et audit qualité des séries historiques QQQ & SPY.<br>• Modélisation économétrique : Baselines, ARIMA, SARIMA, SARIMAX avec SPY retardé.<br>• Module de risque : tests ARCH-LM, GARCH(1,1), prévision de volatilité, VaR et Expected Shortfall.<br>• Développement des vues Streamlit associées : *01 Market Data* et *03 Risk Management*. |
+=======
 | **Pôle Données, Économétrie & Risque** | **Namrani Ilyas** | **D02**, **D03**, **D04** | • Collecte, nettoyage et audit qualité des séries historiques QQQ & SPY.<br>• Modélisation économétrique : Baselines, ARIMA, SARIMA, SARIMAX avec SPY retardé.<br>• Module de risque : tests ARCH-LM, GARCH(1,1), prévision de volatilité, VaR et Expected Shortfall.<br>• Développement des vues Streamlit associées : *01 Market Data* et *03 Risk Management*. |
+>>>>>>> d6500a85a184fc71994df9fecb7589dadb82934b
 | **Pôle Machine Learning, Moteur & Simulation** | **Atattou Youssef** | **D05**, **D06**, **D08** | • Modélisation avancée : Régression Ridge / Logistique, Random Forest / Gradient Boosting, MLP PyTorch.<br>• Conception du moteur de backtesting événementiel (frais, slippage, drawdown, Sharpe, turnover).<br>• Module de Paper Trading sur les séances réelles récentes avec journal d'ordres exportable.<br>• Développement des vues Streamlit associées : *02 Model Lab*, *04 Strategy*, *05 Backtesting* et *06 Paper Trading*. |
 | **Responsabilités partagées** | **Binôme (Ensemble)** | **D01**, **D07**, **D09**, **D10** | • Cadrage initial et architecture du dépôt (D01).<br>• Assemblage de l'application Streamlit `app.py` et mode démonstration (D07).<br>• Tests unitaires `pytest`, gestion des seeds et reproductibilité (D09).<br>• Rédaction du rapport de recherche (12-18 pages) et soutenance orale finale (D10). |
 
