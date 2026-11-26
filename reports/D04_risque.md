@@ -77,18 +77,7 @@ $$\sigma_t^2 = \omega + \alpha \varepsilon_{t-1}^2 + \beta \sigma_{t-1}^2$$
 
 ### 3.4 Phase 3 — Prévision de Volatilité, VaR et Expected Shortfall
 
-#### Formules de calcul (Distribution Student-t avec $\nu = 4{,}04$)
-Pour chaque séance $t+1$, la **Value-at-Risk** et l'**Expected Shortfall** sont calculées à partir de la volatilité $\hat{\sigma}_{t+1}$ prévue par GARCH :
-
-* **Value-at-Risk (VaR) :**
-  $$\text{VaR}_{t+1}(\alpha) = - \left( \hat{\mu} + q_{\alpha} \cdot \hat{\sigma}_{t+1} \right)$$
-  *Où $\hat{\mu} \approx 0{,}0693\%$ et $q_{\alpha}$ est le quantile d'ordre $\alpha$ de la loi de Student standardisée ($q_{0{,}05} = -2{,}103$ pour 95% et $q_{0{,}01} = -3{,}697$ pour 99%).*
-
-* **Expected Shortfall (ES / CVaR) :**
-  $$\text{ES}_{t+1}(\alpha) = \mathbb{E}\left[ -r_{t+1} \mid -r_{t+1} > \text{VaR}_{t+1}(\alpha) \right] = - \left( \hat{\mu} + \lambda_{\alpha}(\nu) \cdot \hat{\sigma}_{t+1} \right)$$
-  *Où $\lambda_{\alpha}(\nu) = - \frac{f(q_{\alpha})}{\alpha} \left( \frac{\nu + q_{\alpha}^2}{\nu - 1} \right)$ représente le multiplicateur théorique de perte conditionnelle extrême.*
-
-#### Synthèse des valeurs obtenues sur les 998 séances hors-échantillon :
+Sur les **998 séances hors-échantillon** (521 en Validation + 477 en Test) :
 
 | Métrique de Risque | Moyenne | Minimum | Maximum | Écart-type | Interprétation financière |
 | :--- | :---: | :---: | :---: | :---: | :--- |
