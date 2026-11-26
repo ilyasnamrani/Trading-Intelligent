@@ -68,7 +68,6 @@ $$\sigma_t^2 = \omega + \alpha \varepsilon_{t-1}^2 + \beta \sigma_{t-1}^2$$
 | $\beta$ (mémoire de variance) | 0.999992 | 0.989106 | Très forte persistance de la volatilité |
 | $\alpha + \beta$ (persistance totale) | 0.999993 | **0.989106** | $< 1$ : processus stationnaire mais à mémoire longue |
 | $\nu$ (degrés de liberté) | — | **4.04** | Queues très épaisses (*fat tails* sévères sur QQQ) |
-| Log-Vraisemblance | -2542.27 | **-2418.56** | Meilleur ajustement (+123.71) |
 | AIC | 5092.54 | **4847.12** | Nettement inférieur |
 | **BIC** | 5113.17 | **4872.91** | **Modèle retenu (écart de -240.26)** |
 

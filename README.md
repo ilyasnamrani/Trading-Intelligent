@@ -68,7 +68,6 @@ Alors que le livrable D03 modélisait la **moyenne conditionnelle**, le livrable
 | `β` (mémoire de variance) | 0.999992 | 0.989106 |
 | `α + β` (persistance totale) | 0.999993 | **0.989106** |
 | `ν` (degrés de liberté) | — | **4.04** |
-| Log-Vraisemblance | -2542.27 | **-2418.56** |
 | AIC | 5092.54 | **4847.12** |
 | **BIC** | 5113.17 | **4872.91 (Retenu)** |
 
