@@ -16,8 +16,8 @@
 | **D01 — Cadrage & Architecture** | Validé | [Consulter le rapport D01](reports/D01_cadrage.md) |
 | **D02 — Données, Ingestion & Audit** | Validé | [Consulter le rapport D02](reports/D02_rapport.md) |
 | **D03 — Économétrie de la moyenne** | Validé | [Consulter le rapport D03](reports/D03_rapport.md) |
-| **D04 — Module de Risque (GARCH)** | **Actuel (ci-dessous)** | *Affiché sur cette page* |
-| **D05 — Machine Learning & Deep Learning** |  À venir | `reports/D05_ml_dl.md` |
+| **D04 — Module de Risque (GARCH)** | Validé | [Consulter le rapport D04](reports/D04_risque.md) |
+| **D05 — Machine Learning & Deep Learning** | **Actuel (ci-dessous)** | *Affiché sur cette page* |
 | **D06 — Stratégie & Backtesting** |  À venir | `reports/D06_backtest.md` |
 | **D07 — Application Web (Streamlit)** |  À venir | Code `app.py` |
 | **D08 — Paper Trading (5 séances)** |  À venir | `reports/D08_paper_trading.md` |
@@ -26,64 +26,51 @@
 
 ---
 
-# Livrable Actuel : D04 — Module de Risque (ARCH / GARCH, VaR et Expected Shortfall)
+# Livrable Actuel : D05 — Machine Learning et Deep Learning
 
-## 1. Objectif du Livrable D04
+## 1. Objectif du Livrable D05
 
-Le livrable D04 constitue le **moteur d'anticipation du risque** de la plateforme Quant Lab, au cœur de la question scientifique de la variante **B01** :
-> *« Les modèles anticipant le risque améliorent-ils les décisions sur un ETF technologique volatil (QQQ) ? »*
+Le livrable D05 constitue le second étage prédictif de la plateforme **Quant Lab**, au cœur de la question scientifique de la variante **B01** :
+> *« Les modèles ML/DL justifient-ils leur complexité face à SARIMAX sur un ETF de grandes entreprises technologiques ? »*
 
-Alors que le livrable D03 modélisait la **moyenne conditionnelle**, le livrable D04 modélise la **variance conditionnelle** (`σ²_t`) afin de :
-1. Prouver statistiquement l'existence de *clusters de volatilité* (hétéroscédasticité conditionnelle).
-2. Estimer un modèle **GARCH(1,1)** en comparant les innovations Gaussiennes (Normale) et à queues épaisses (Student-t).
-3. Calculer les seuils de risque quotidiens : **Value-at-Risk (VaR 95% et 99%)** et **Expected Shortfall (ES / CVaR)**.
-4. Valider la fiabilité du modèle via le **backtesting de la VaR (Test POF de Kupiec)**.
+Alors que le D03 modélisait la dynamique linéaire (Hit Ratio ≈ 50.3% - 52.8%) et le D04 la volatilité conditionnelle GARCH, le livrable D05 évalue la capacité d'algorithmes non-linéaires d'apprentissage supervisé à anticiper la **direction du rendement à un jour (`target_direction = 1 si r_{t+1} > 0`)**.
 
 ---
 
-## 2. Architecture du Code (`src/risk.py`)
+## 2. Architecture du Code (`src/models/ml_models.py`)
 
-| Phase | Rôle scientifique | Fonction Python | Utilité pour la suite (D05 / D06) |
+Les 3 familles exigées par le cahier des charges sont implémentées et comparées sous un protocole temporel étanche :
+
+| Famille | Modèle | Hyperparamètres clés (réglés sur Validation) | Rôle dans le projet |
 | :--- | :--- | :--- | :--- |
-| **Phase 1** | Diagnostic d'hétéroscédasticité (ARCH-LM & Ljung-Box sur `r²_t`) | `test_arch_effect()` | Justifie formellement le rejet d'une variance constante et le passage à GARCH. |
-| **Phase 2** | Estimation GARCH(1,1) & comparaison Normale vs Student-t | `fit_garch()`, `compare_distributions()` | Sélectionne la loi capturant le mieux les chocs extrêmes du Nasdaq-100. |
-| **Phase 3** | Prévision de volatilité `σ_{t+1}` et calcul VaR / ES | `predict_volatility_fast()` | Génère la feature de volatilité (`garch_volatility.csv`) pour D05 et D06. |
-| **Phase 4** | Backtesting de la VaR (comptage des *breaches* et test de Kupiec) | `backtest_var()` | Prouve la conformité statistique et réglementaire des seuils de risque. |
+| **Linéaire régularisé** | **Logistic Regression L2 (Ridge)** | `C = 0.1`, solveur `lbfgs`, pénalité L2 | Baseline linéaire pénalisée contre l'overfitting. |
+| **Arborescent (Bagging)** | **Random Forest Classifier** | `n_estimators = 150`, `max_depth = 4`, `min_samples_split = 10` | Capture des interactions non-linéaires avec régularisation de profondeur. |
+| **Arborescent (Boosting)** | **HistGradientBoosting** | `max_iter = 100`, `max_depth = 3`, `lr = 0.03`, `l2_reg = 1.0` | Algorithme séquentiel de boosting à gradient. |
+| **Deep Learning** | **MLP Neural Net** | Architecture (32, 16), activation ReLU, `alpha = 0.01`, early stopping | Réseau dense feed-forward compact sous contrainte temporelle. |
 
 ---
 
-## 3. Synthèse des Résultats
+## 3. Synthèse des Résultats et Benchmark Comparatif
 
-### 3.1 Phase 1 — Diagnostic d'Hétéroscédasticité (Train 2018–2022)
-* **Test ARCH-LM d'Engle (20 retards) :** Statistique LM = 29.7506 (`p = 0.0740`).
-* **Test Ljung-Box sur `r²_t` (20 retards) :** Statistique Q = 32.0520 (**`p = 0.0427 < 0.05`**).
-* **Conclusion :** Rejet de H0 → Effet ARCH confirmé, présence de *clustering* de volatilité.
+### 3.1 Performance sur la Validation (2023–2024, 522 séances) et Test Gelé (2025–2026, 477 séances)
 
-### 3.2 Phase 2 — Estimation GARCH(1,1) : Normale vs Student-t
+| Modèle | Accuracy Validation | Hit Ratio Validation | Accuracy Test Gelé | Hit Ratio Test Gelé | Macro F1 Test | Rang Test |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Random Forest (Champion)** | 50.57 % | 50.57 % | **51.78 %** | **51.78 %** | **47.31 %** | **1 (Retenu)** |
+| **Baseline Majoritaire** | 51.92 % | 51.92 % | 50.31 % | 50.31 % | 33.47 % | 2 |
+| **MLP Neural Net (Deep Learning)** | 48.66 % | 48.66 % | 47.59 % | 47.59 % | 46.66 % | 3 |
+| **HistGradientBoosting** | 48.85 % | 48.85 % | 46.75 % | 46.75 % | 44.92 % | 4 |
+| **Logistic Regression L2 (Ridge)** | 51.34 % | 51.34 % | 46.54 % | 46.54 % | 43.87 % | 5 |
 
-| Paramètre / Critère | GARCH(1,1) — Normale | GARCH(1,1) — Student-t |
-| :--- | :---: | :---: |
-| `ω` (plancher long terme) | 0.001365 | 0.033107 |
-| `α` (réactivité aux chocs) | 0.000000 | 0.000000 |
-| `β` (mémoire de variance) | 0.999992 | 0.989106 |
-| `α + β` (persistance totale) | 0.999993 | **0.989106** |
-| `ν` (degrés de liberté) | — | **4.04** |
-| AIC | 5092.54 | **4847.12** |
-| **BIC** | 5113.17 | **4872.91 (Retenu)** |
-
-### 3.3 Phases 3 & 4 — Prévisions et Backtesting (998 séances hors-échantillon)
-* **Volatilité quotidienne prévue (`σ_{t+1}`) :** Moyenne **1.76 %** (Min 1.73 %, Max 2.50 %).
-* **VaR & Expected Shortfall moyens :**
-  * `VaR 95%` = **3.65 %** | `Expected Shortfall 95%` = **5.46 %**
-  * `VaR 99%` = **6.39 %** | `Expected Shortfall 99%` = **8.82 %**
-* **Backtesting de Kupiec :**
-  * **VaR 99% VALIDÉE** (`p = 0.7512 > 0.05`) — 9 dépassements observés (**0.90 %** vs 1.0 % nominal).
-  * **VaR 95% conservatrice** — 21 dépassements observés (**2.10 %** vs 5.0 % nominal), offrant une forte protection du capital.
+### 3.2 Analyse Critique & Apport du Livrable D04
+1. **Supériorité hors échantillon du Random Forest :** Sur le test gelé, **Random Forest surpasse le buy-and-hold (50.31%) et SARIMAX (50.31%) avec 51.78% de direction correcte**. Sa structure à profondeur contrainte (`max_depth = 4`) le protège efficacement du surapprentissage.
+2. **Apport direct de GARCH (D04) :** L'analyse d'importance des variables (Gini MDI) montre que la volatilité conditionnelle GARCH (`garch_vol`) se classe en **3ème position des variables les plus contributives (10.3%)**, prouvant que le module de risque D04 améliore l'apprentissage prédictif.
+3. **Surapprentissage des modèles profonds :** Le Gradient Boosting et le MLP ont tendance à surajuster le bruit des rendements quotidiens, illustrant la règle de parcimonie sur les séries financières liquides.
 
 ---
 
 ## 4. Visualisation d'Audit
 
-![D04 — Module de Risque : GARCH(1,1), VaR et Backtesting](reports/figures/D04_risk_analysis.png)
+![D05 — Machine Learning et Deep Learning : Benchmark Prédictif](reports/figures/D05_ml_dl_comparatif.png)
 
-> **Pour la version complète et les équations détaillées :** [Consulter le rapport D04](reports/D04_risque.md) | **Code source :** [`src/risk.py`](src/risk.py)
+> **Pour la version complète et l'analyse détaillée :** [Consulter le rapport D05](reports/D05_ml_dl.md) | **Code source :** [`src/models/ml_models.py`](src/models/ml_models.py) | **Signaux exportés :** [`data/processed/ml_predictions.csv`](data/processed/ml_predictions.csv)
