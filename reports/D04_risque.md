@@ -86,7 +86,7 @@ Sur les **998 séances hors-échantillon** (521 en Validation + 477 en Test) :
 
 ---
 
-### 3.5 Phase 4 — Backtesting de la VaR (Test POF de Kupiec)
+### 3.5 Phase 4 — Backtesting de la VaR
 
 Le backtesting confronte les pertes réelles quotidiennes ($-r_{t+1}$) aux seuils de VaR prévus la veille :
 
