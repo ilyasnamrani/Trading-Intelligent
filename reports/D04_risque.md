@@ -77,12 +77,26 @@ $$\sigma_t^2 = \omega + \alpha \varepsilon_{t-1}^2 + \beta \sigma_{t-1}^2$$
 
 ### 3.4 Phase 3 — Prévision de Volatilité, VaR et Expected Shortfall
 
-Sur les **998 séances hors-échantillon** (521 en Validation + 477 en Test) :
-* **Volatilité quotidienne prévue ($\hat{\sigma}_{t+1}$) :**
-  * Moyenne : **1.7579 %** (soit $\approx 27{,}9\%$ annualisé)
-  * Minimum : **1.7312 %**
-  * Maximum : **2.5005 %**
-  * Écart-type : **0.0625 %**
+#### Formules de calcul (Distribution Student-t avec $\nu = 4{,}04$)
+Pour chaque séance $t+1$, la **Value-at-Risk** et l'**Expected Shortfall** sont calculées à partir de la volatilité $\hat{\sigma}_{t+1}$ prévue par GARCH :
+
+* **Value-at-Risk (VaR) :**
+  $$\text{VaR}_{t+1}(\alpha) = - \left( \hat{\mu} + q_{\alpha} \cdot \hat{\sigma}_{t+1} \right)$$
+  *Où $\hat{\mu} \approx 0{,}0693\%$ et $q_{\alpha}$ est le quantile d'ordre $\alpha$ de la loi de Student standardisée ($q_{0{,}05} = -2{,}103$ pour 95% et $q_{0{,}01} = -3{,}697$ pour 99%).*
+
+* **Expected Shortfall (ES / CVaR) :**
+  $$\text{ES}_{t+1}(\alpha) = \mathbb{E}\left[ -r_{t+1} \mid -r_{t+1} > \text{VaR}_{t+1}(\alpha) \right] = - \left( \hat{\mu} + \lambda_{\alpha}(\nu) \cdot \hat{\sigma}_{t+1} \right)$$
+  *Où $\lambda_{\alpha}(\nu) = - \frac{f(q_{\alpha})}{\alpha} \left( \frac{\nu + q_{\alpha}^2}{\nu - 1} \right)$ représente le multiplicateur théorique de perte conditionnelle extrême.*
+
+#### Synthèse des valeurs obtenues sur les 998 séances hors-échantillon :
+
+| Métrique de Risque | Moyenne | Minimum | Maximum | Écart-type | Interprétation financière |
+| :--- | :---: | :---: | :---: | :---: | :--- |
+| **Volatilité prévue $\hat{\sigma}_{t+1}$** | **1.76 %** | 1.73 % | 2.50 % | 0.06 % | Incertitude quotidienne moyenne ($\approx 27{,}9\%$ annualisé). |
+| **VaR 95%** | **3.65 %** | 3.59 % | 5.21 % | 0.13 % | Perte journalière maximale avec 95% de confiance. |
+| **Expected Shortfall 95%** | **5.46 %** | 5.37 % | 7.78 % | 0.20 % | Perte moyenne attendue si la journée fait partie des 5% pires cas. |
+| **VaR 99%** | **6.39 %** | 6.29 % | 9.11 % | 0.23 % | Perte journalière maximale avec 99% de confiance (choc extrême). |
+| **Expected Shortfall 99%** | **8.82 %** | 8.69 % | 12.58 % | 0.32 % | Perte moyenne attendue lors d'un krach violent (1% pire cas). |
 
 ---
 

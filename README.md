@@ -72,9 +72,13 @@ Alors que le livrable D03 modélisait la **moyenne conditionnelle**, le livrable
 | **BIC** | 5113.17 | **4872.91 (Retenu)** |
 
 ### 3.3 Phases 3 & 4 — Prévisions et Backtesting (998 séances hors-échantillon)
-* **Volatilité quotidienne prévue (`σ_{t+1}`) :** Moyenne **1.7579 %** (Min 1.7312 %, Max 2.5005 %).
-* **VaR 99% :** **VALIDÉE par Kupiec** (`p = 0.7512 > 0.05`) — 9 dépassements observés (**0.90 %** vs 1.0 % nominal).
-* **VaR 95% :** Conservatrice — 21 dépassements observés (**2.10 %** vs 5.0 % nominal), offrant une forte protection du capital.
+* **Volatilité quotidienne prévue (`σ_{t+1}`) :** Moyenne **1.76 %** (Min 1.73 %, Max 2.50 %).
+* **VaR & Expected Shortfall moyens :**
+  * `VaR 95%` = **3.65 %** | `Expected Shortfall 95%` = **5.46 %**
+  * `VaR 99%` = **6.39 %** | `Expected Shortfall 99%` = **8.82 %**
+* **Backtesting de Kupiec :**
+  * **VaR 99% VALIDÉE** (`p = 0.7512 > 0.05`) — 9 dépassements observés (**0.90 %** vs 1.0 % nominal).
+  * **VaR 95% conservatrice** — 21 dépassements observés (**2.10 %** vs 5.0 % nominal), offrant une forte protection du capital.
 
 ---
 
